@@ -1,14 +1,13 @@
-FROM fedora:24
+FROM fedora:30
 MAINTAINER Seth Jennings <sethdjennings@gmail.com>
 
 RUN dnf install dos2unix -y && dnf clean all
-
 RUN dnf install certbot -y && dnf clean all
-RUN mkdir /etc/letsencrypt
+RUN dnf install python -y && dnf clean all
 
 CMD ["/entrypoint.sh"]
-
 COPY secret-patch-template.json /
 COPY entrypoint.sh /
 RUN dos2unix /secret-patch-template.json
 RUN dos2unix /entrypoint.sh
+

@@ -18,17 +18,17 @@ echo "Current Kubernetes namespce: $NAMESPACE"
 echo "Starting HTTP server..."
 python -m SimpleHTTPServer 80 &
 PID=$!
+
 echo "Starting certbot..."
 if [ -z $MODE ]
 then
-	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
+	certbot certonly --webroot -w / -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
 else
-	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
+	certbot certonly --webroot -w / -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --dry-run
 fi
 
 kill $PID
 echo "Certbot finished. Killing http server..."
-
 echo "Finiding certs. Exiting if certs are not found ..."
 CERTPATH=/etc/letsencrypt/live/$(echo $DOMAINS | cut -f1 -d',')
 ls $CERTPATH || exit 1
