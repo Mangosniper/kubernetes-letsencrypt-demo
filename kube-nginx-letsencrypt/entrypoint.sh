@@ -9,6 +9,7 @@ echo "Inputs:"
 echo " EMAIL: $EMAIL"
 echo " DOMAINS: $DOMAINS"
 echo " SECRET: $SECRET"
+echo " MODE: $MODE"
 
 
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
@@ -18,7 +19,13 @@ echo "Starting HTTP server..."
 python -m SimpleHTTPServer 80 &
 PID=$!
 echo "Starting certbot..."
-certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
+if [ -z $MODE ]
+then
+	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
+else
+	certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS} --staging
+fi
+
 kill $PID
 echo "Certbot finished. Killing http server..."
 
